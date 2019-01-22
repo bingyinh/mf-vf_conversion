@@ -83,7 +83,7 @@ class mfvfConvert:
                     # check whether value exists (TODO)
                     # check whether unit is g/cm^3 (TODO)
                     # need more layers here
-                density = filCon.findtext('.//Density/value')
+                density = filCon.findtext('./Density/value') # one filler component should have only one density
                 if density is None:
                     density = self.getDensity(chemical)
                 else:
