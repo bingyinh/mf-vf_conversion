@@ -267,6 +267,11 @@ class mfvfConvert:
 
 ## Test
 if __name__ == '__main__':
-    # mvc = mfvfConvert('test.xml')
-    mvc = mfvfConvert('corner2.xml')
+    mvc = mfvfConvert('test.xml')
+    # mvc = mfvfConvert('corner7.xml')
     mvc.run()
+    # import glob
+    # xmls = glob.glob("L129*.xml")
+    # for xml in xmls:
+    #     mvc = mfvfConvert(xml)
+    #     mvc.run()
