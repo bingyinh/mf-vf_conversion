@@ -1,5 +1,7 @@
 # The prototype conversion script for NanoMine data vf-mf conversion
 # Bingyin Hu 10/04/2018
+# Bingyin Hu 02/05/2020 update for PNC_schema_010720
+
 from lxml import etree as ET
 import os
 
@@ -30,8 +32,9 @@ class mfvfConvert:
     # we requires the density info to be stored in g/cm^3
     def getDensity(self, chemical):
         # someDensityFunction crawler?(TODO)
-        density = someDensityFunction(chemical)
-        return density
+        # density = someDensityFunction(chemical)
+        # return density
+        pass
 
     # this function returns the most frequent items within a list
     def freq(self, myList):
@@ -51,7 +54,7 @@ class mfvfConvert:
     # filler components and saves them in self.filInfo
     def computeFiller(self):
         # loop thru the fillers
-        for fil in xrange(self.filNum):
+        for fil in range(self.filNum):
             filConInfo = {} # an info dict for FillerComponent, should be a value of self.filInfo. Example: self.filInfo[0] = filConInfo
             ele = self.fils[fil]
             # find all the FillerComponent under Filler
@@ -145,7 +148,7 @@ class mfvfConvert:
     # this function computes the absolute mass and volume of all 
     # matrix components and saves them in self.matInfo
     def computeMatrix(self):
-        for mat in xrange(self.matConsNum):
+        for mat in range(self.matConsNum):
             ele = self.mats[mat]
             # chemical name
             chemical = ele.findtext('.//ChemicalName')
@@ -226,7 +229,7 @@ class mfvfConvert:
         totalAbsMass = self.matMass + self.filMass
         totalAbsVol = self.matVol + self.filVol
         # loop thru the fillers in self.filInfo
-        for fil in xrange(self.filNum):
+        for fil in range(self.filNum):
             # preparation for insertion back into xmls
             ele = self.fils[fil]
             c_ele = ele.find('.//FillerComposition/Fraction')
