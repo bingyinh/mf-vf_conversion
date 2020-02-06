@@ -264,9 +264,7 @@ class mfvfConvert:
     
     # this function writes the tree to the filename
     def writeTree(self):
-        root = self.tree.getroot()
-        et = ET.ElementTree(root)
-        et.write(self.filename, pretty_print=True, xml_declaration=True, encoding="utf-8")
+        self.tree.write(self.filename, xml_declaration=True, encoding="utf-8")
 
     # this function calls the appropriate functions to finish the whole conversion process
     def run(self):
@@ -304,9 +302,10 @@ class mfvfConvert:
 
 ## Test
 if __name__ == '__main__':
-    mvc = mfvfConvert('L159_S2_Lu_2006.xml-5b71eb00e74a1d7c81bec6c7-5b72e790e74a1d68f48b2daa.xml')
+    # mvc = mfvfConvert('L159_S2_Lu_2006.xml-5b71eb00e74a1d7c81bec6c7-5b72e790e74a1d68f48b2daa.xml')
     # mvc = mfvfConvert('L290_S20_Si_2006.xml')
     # mvc = mfvfConvert('corner7.xml')
+    mvc = mfvfConvert('nofiller.xml')
     mvc.run()
     # import glob
     # xmls = glob.glob("L129*.xml")
