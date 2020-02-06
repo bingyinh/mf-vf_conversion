@@ -64,12 +64,12 @@ class mfvfConvert:
             c_ele = ele.find('.//FillerComposition/Fraction')
             if c_ele is not None:
                 # see if it's mass or volume
-                if c_ele.findtext('mass') is not None:
+                if c_ele.findtext('mass/value') is not None:
                     filMV = 'mass'
-                    filComp = float(c_ele.findtext('mass'))
-                elif c_ele.findtext('volume') is not None:
+                    filComp = float(c_ele.findtext('mass/value'))
+                elif c_ele.findtext('volume/value') is not None:
                     filMV = 'volume'
-                    filComp = float(c_ele.findtext('volume'))
+                    filComp = float(c_ele.findtext('volume/value'))
                 else:
                     raise LookupError('[Filler Error] FillerComposition requires at least a "mass" field or a "volume" field.')
                 self.filMVs.append(filMV)
@@ -236,6 +236,7 @@ class mfvfConvert:
             # compute mf and vf, if any of them exists, double-check
             mf = self.filInfo[fil]['overall']['absMass'] / float(totalAbsMass)
             vf = self.filInfo[fil]['overall']['absVolume'] / float(totalAbsVol)
+            # mf, vf = self.matchPrecision(mf, vf) # make the mf vf have the same precision
             # mass fraction
             if 'mass' in self.filInfo[fil]['overall']:
                 if abs(self.filInfo[fil]['overall']['mass'] - mf) >= 1e-2:
@@ -243,7 +244,11 @@ class mfvfConvert:
             else:
                 self.filInfo[fil]['overall']['mass'] = mf
                 c_ele.insert(0, ET.Element('mass'))
-                c_ele.find('.//mass').text = str(mf)
+                m_ele = c_ele.find('mass')
+                mvalue = ET.SubElement(m_ele, 'value')
+                mvalue.text = str(mf)
+                msource = ET.SubElement(m_ele, 'source')
+                msource.text = "computed by NanoMine"
             # volume fraction
             if 'volume' in self.filInfo[fil]['overall']:
                 if abs(self.filInfo[fil]['overall']['volume'] - vf) >= 1e-2:
@@ -251,7 +256,11 @@ class mfvfConvert:
             else:
                 self.filInfo[fil]['overall']['volume'] = vf
                 c_ele.insert(-1, ET.Element('volume'))
-                c_ele.find('.//volume').text = str(vf)
+                v_ele = c_ele.find('volume')
+                vvalue = ET.SubElement(v_ele, 'value')
+                vvalue.text = str(vf)
+                vsource = ET.SubElement(v_ele, 'source')
+                vsource.text = "computed by NanoMine"
     
     # this function writes the tree to the filename
     def writeTree(self):
@@ -268,9 +277,35 @@ class mfvfConvert:
         self.computeComposite()
         self.writeTree()
 
+    # this function takes in two floats and return two floats while keeping the lower precision of the two inputs
+    def matchPrecision(self, fone, ftwo):
+        assert type(fone) == float and type(ftwo) == float, "Mass fraction and volume fraction should be of type 'float'."
+        pdone = self.getPrecision(fone)
+        pdtwo = self.getPrecision(ftwo)
+        pd = min(pdone, pdtwo)
+        return (round(fone,pd), round(ftwo,pd))
+        
+    # this function returns the precision of the input float, input float assumed to have <6-digit precision
+    def getPrecision(self, myfloat):
+        prec = 6
+        sone = format(myfloat, '.{}f'.format(prec)) # we can assume one of the floats has less than 6-digit precision
+        sone_zero = 1
+        while sone_zero < len(sone):
+            if sone[-sone_zero] == '0':
+                sone_zero += 1
+            else:
+                break
+        # e.g. 0.000000 this should never happen
+        if sone_zero == prec + 1:
+            pdone = prec
+        else:
+            pdone = len(sone) - sone.find('.') - sone_zero
+        return pdone
+
 ## Test
 if __name__ == '__main__':
-    mvc = mfvfConvert('test.xml')
+    # mvc = mfvfConvert('L159_S2_Lu_2006.xml-5b71eb00e74a1d7c81bec6c7-5b72e790e74a1d68f48b2daa.xml')
+    mvc = mfvfConvert('L290_S20_Si_2006.xml')
     # mvc = mfvfConvert('corner7.xml')
     mvc.run()
     # import glob
