@@ -255,7 +255,7 @@ class mfvfConvert:
                     raise AssertionError('[Calculation Error] The calculated volume fraction of filler No.'+str(fil)+' is not consistent with the reported value.')
             else:
                 self.filInfo[fil]['overall']['volume'] = vf
-                c_ele.insert(-1, ET.Element('volume'))
+                c_ele.insert(1, ET.Element('volume'))
                 v_ele = c_ele.find('volume')
                 vvalue = ET.SubElement(v_ele, 'value')
                 vvalue.text = str(vf)
@@ -304,8 +304,8 @@ class mfvfConvert:
 
 ## Test
 if __name__ == '__main__':
-    # mvc = mfvfConvert('L159_S2_Lu_2006.xml-5b71eb00e74a1d7c81bec6c7-5b72e790e74a1d68f48b2daa.xml')
-    mvc = mfvfConvert('L290_S20_Si_2006.xml')
+    mvc = mfvfConvert('L159_S2_Lu_2006.xml-5b71eb00e74a1d7c81bec6c7-5b72e790e74a1d68f48b2daa.xml')
+    # mvc = mfvfConvert('L290_S20_Si_2006.xml')
     # mvc = mfvfConvert('corner7.xml')
     mvc.run()
     # import glob
