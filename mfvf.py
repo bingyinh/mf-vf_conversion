@@ -160,7 +160,8 @@ class mfvfConvert:
             # only consider MCC with Fraction reported
             MCCs = ele.findall('.//MatrixComponentComposition/Fraction')
             # need to find a solution for block-polymers (TODO)
-            if (len(densitys) == 1 and len(MCCs) == 0) or (len(densitys) - len(MCCs) == 0):
+            # ignore cases when there's one MatrixComponent with multiple MatrixComponentComposition
+            if (len(densitys) == 1 and self.matConsNum == 1) or (len(densitys) - len(MCCs) == 0):
                 pass
             else:
                 raise AssertionError('[Matrix Error] The number of density provided does not match with the number of MatrixComponentComposition or Constituent.')
@@ -175,7 +176,7 @@ class mfvfConvert:
                 density = float(density)
             # matrix component composition
             cc_ele = ele.find('.//MatrixComponentComposition/Fraction')
-            if cc_ele is None:
+            if cc_ele is None or self.matConsNum == 1:
                 mv = self.filMV
                 cc = 1.0 * self.matComp
             else:
@@ -270,6 +271,8 @@ class mfvfConvert:
     def run(self):
         if self.tree.find('.//MATERIALS/Filler') is None:
             return # pure polymer
+        if self.tree.find('.//FillerComposition/Fraction/mass/value') is not None and self.tree.find('.//FillerComposition/Fraction/volume/value') is not None:
+            return # both mass and volume fraction already reported
         self.computeFiller()
         self.computeMatrix()
         self.computeComposite()
@@ -305,7 +308,8 @@ if __name__ == '__main__':
     # mvc = mfvfConvert('L159_S2_Lu_2006.xml-5b71eb00e74a1d7c81bec6c7-5b72e790e74a1d68f48b2daa.xml')
     # mvc = mfvfConvert('L290_S20_Si_2006.xml')
     # mvc = mfvfConvert('corner7.xml')
-    mvc = mfvfConvert('nofiller.xml')
+    # mvc = mfvfConvert('nofiller.xml')
+    mvc = mfvfConvert('L111_S2_Singha_2009.xml-5b71eb00e74a1d7c81bec6c7-5b71ebeae74a1d7c81bec705.xml')
     mvc.run()
     # import glob
     # xmls = glob.glob("L129*.xml")
